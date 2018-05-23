@@ -5,12 +5,14 @@ import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
 lazy val root = Project(id = "sea-data-root", base = file("."))
   .aggregate(
+    seaApiService,
     seaDocs,
     seaFunctest,
     seaConsole,
     seaBroker,
     seaData,
     seaCoreExt,
+    example,
     seaCore,
     seaCommon
   )
@@ -34,7 +36,7 @@ lazy val seaDocs = _project("sea-docs")
       "scaladoc.akka.base_url" -> s"http://doc.akka.io/api/$versionAkka",
       "akka.version" -> versionAkka
     ))
-      .settings(Publishing.noPublish: _*)
+  .settings(Publishing.noPublish: _*)
 
 lazy val seaFunctest = _project("sea-functest")
   .dependsOn(seaConsole, seaBroker,
@@ -48,6 +50,19 @@ lazy val seaFunctest = _project("sea-functest")
     libraryDependencies ++= Seq(
       _akkaMultiNodeTestkit
     ) //++ _kamons
+  )
+
+// API Service
+lazy val seaApiService = _project("sea-api-service")
+  .dependsOn(seaCore % "compile->compile;test->test")
+  .enablePlugins(JavaAppPackaging)
+  .settings(Packaging.settings: _*)
+  .settings(Publishing.noPublish: _*)
+  .settings(
+    mainClass in Compile := Some("seadata.apiservice.boot.Main"),
+    libraryDependencies ++= Seq(
+
+    ) ++ _akkaHttps
   )
 
 // 监查、控制、管理
@@ -107,6 +122,14 @@ lazy val seaCoreExt = _project("sea-core-ext")
     ) ++ _akkaClusters ++ _akkaHttps //++ _kamons
   )
 
+lazy val example = _project("example")
+  .settings(Publishing.publishing: _*)
+  .dependsOn(seaCore % "compile->compile;test->test")
+  .settings(
+    libraryDependencies ++= _akkaClusters ++ _akkaHttps //++ _kamons
+  )
+
+
 lazy val seaCore = _project("sea-core")
   .dependsOn(seaCommon % "compile->compile;test->test")
   .settings(Publishing.publishing: _*)
@@ -123,7 +146,7 @@ lazy val seaCommon = _project("sea-common")
   .settings(Publishing.publishing: _*)
   .settings(
     libraryDependencies ++= Seq(
-//      _swaggerAnnotation % Provided,
+      //      _swaggerAnnotation % Provided,
       _hikariCP,
       _scalaLogging,
       _logbackClassic,

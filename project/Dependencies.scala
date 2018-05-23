@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  val versionScala = "2.12.5"
+  val versionScala = "2.12.6"
   val versionScalaLib = "2.12"
 
   val _scalaXml = ("org.scala-lang.modules" %% "scala-xml" % "1.1.0").exclude("org.scala-lang", "scala-library")
@@ -153,7 +153,7 @@ object Dependencies {
   val _scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0"
 
   val _slicks = Seq(
-    "com.typesafe.slick" %% "slick-hikaricp" % "3.2.3",
+    ("com.typesafe.slick" %% "slick-hikaricp" % "3.2.3").exclude("com.zaxxer", "HikariCP"),
     "com.typesafe.slick" %% "slick-testkit" % "3.2.3" % Test,
     "com.github.tminglei" %% "slick-pg" % "0.16.1",
     "com.github.tminglei" %% "slick-pg_circe-json" % "0.16.1"
